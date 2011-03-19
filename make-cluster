@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Script for quickly setting up nodes for cluster suite testing
 
 TMPL_NAME=tmpl_cent5-64-0
@@ -30,10 +29,11 @@ function get_template_response(){
 }
 
 function mktemplate(){
-    echo "well hello dolly."
-     # virt-install --accelerate --hvm --connect qemu:///system \
-     #     --name $TMPL_NAME --ram=$TMPL_MEM --disk path=$TMPL_DISKIMG,size=$TMPL_DISKSIZE \  
-     #     -w bridge:br0 --vnc -c $ISO
+    echo "Creating template"
+    virt-install --accelerate --hvm --name $TMPL_NAME \
+    --connect qemu:///system --ram=$TMPL_MEM --disk path=$TMPL_DISKIMG,size=$TMPL_DISKSIZE \
+        --network network:default --vnc -c $TMPL_ISO
+
 }
 
 function mknode(){
@@ -41,7 +41,9 @@ function mknode(){
 }
 
 function mkclean(){
-    echo "hai"
+    virsh destroy $TMPL_NAME
+    virsh undefine $TMPL_NAME
+    rm -rf $TMPL_DISKIMAGE
 }
 
 
@@ -52,7 +54,7 @@ if [ -z "$@" ]; then
 fi
 
 # parse args
-while getopts ":tn:c:" arg; do
+while getopts ":tn:c" arg; do
   case $arg in
     t)
       echo "Create new template" >&2
