@@ -1,0 +1,85 @@
+#!/bin/bash
+
+# Script for quickly setting up nodes for cluster suite testing
+
+TMPL_NAME=tmpl_cent5-64-0
+TMPL_DISKIMG=/root/images/$TMPL_NAME.img
+TMPL_DISKSIZE=30
+TMPL_MEM=512
+TMPL_ISO=/root/iso/CentOS-5.5-x86_64-bin-DVD-1of2.iso
+
+
+function usage(){
+    echo "You fucked up. Start over"
+}
+
+
+function get_template_response(){
+    echo "This will wipe out any previously created template."
+    read -p "Should I proceed? [y/n] " yn
+    case $yn in
+        [Yy]*) 
+            mktemplate; 
+            break;;
+        [Nn]*) 
+            exit;;
+        *) 
+            echo "That makes no sense"
+            exit;;
+    esac
+}
+
+function mktemplate(){
+    echo "well hello dolly."
+     # virt-install --accelerate --hvm --connect qemu:///system \
+     #     --name $TMPL_NAME --ram=$TMPL_MEM --disk path=$TMPL_DISKIMG,size=$TMPL_DISKSIZE \  
+     #     -w bridge:br0 --vnc -c $ISO
+}
+
+function mknode(){
+    echo "booberry"
+}
+
+function mkclean(){
+    echo "hai"
+}
+
+
+# script requires an argument
+if [ -z "$@" ]; then
+  echo "Script requires an argument"
+  usage
+fi
+
+# parse args
+while getopts ":tn:c:" arg; do
+  case $arg in
+    t)
+      echo "Create new template" >&2
+      get_template_response
+      ;;
+    n)
+      echo "Create new node" >&2
+      mknode
+      ;;
+    c)
+      echo "Cleaning up" >&2
+      mkclean
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      usage
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      usage
+      exit 1
+      ;;
+    *)
+      echo "You got me pal." >&2
+      usage
+      exit 1
+      ;;
+  esac
+done
