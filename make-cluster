@@ -9,6 +9,7 @@ TMPL_ISO_LOC=http://192.168.122.1/disk
 TMPL_KS_DEV=eth0
 TMPL_KS_IP=192.168.122.48
 TMPL_KS_NM=255.255.255.0
+TMPL_KS_GW=192.168.122.1
 TMPL_KS_CFG=http://192.168.122.1/tmpl_ks.cfg
 
 function usage(){
@@ -38,7 +39,7 @@ function mktemplate(){
     virt-install --accelerate --hvm --name $TMPL_NAME \
     --connect qemu:///system --ram=$TMPL_MEM --disk path=$TMPL_DISKIMG,size=$TMPL_DISKSIZE \
     --network network:default --vnc -l $TMPL_ISO_LOC \
-    --extra-args="ks=$TMPL_KS_CFG ksdevice=$TMPL_KS_DEV ip=$TMPL_KS_IP netmask=$TMPL_KS_NM"
+    --extra-args="ks=$TMPL_KS_CFG ksdevice=$TMPL_KS_DEV ip=$TMPL_KS_IP netmask=$TMPL_KS_NM gateway=$TMPL_KS_GW"
 
 }
 
