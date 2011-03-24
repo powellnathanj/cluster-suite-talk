@@ -1,6 +1,5 @@
 #!/bin/bash
 # Script for quickly setting up nodes for cluster suite testing
-
 TMPL_NAME=tmpl_cent5-64-0
 TMPL_LV=/dev/mapper/VolGroup00-tmpl_lv
 TMPL_MEM=512
@@ -10,29 +9,17 @@ TMPL_KS_IP=192.168.122.48
 TMPL_KS_NM=255.255.255.0
 TMPL_KS_GW=192.168.122.1
 TMPL_KS_CFG=http://192.168.122.1/tmpl_ks.cfg
+VG_PATH=/dev/VolGroup00
 
 function usage(){
     echo "You fucked up. Start over"
 }
 
-function get_template_response(){
-    echo "This will wipe out any previously created template."
-    read -p "Should I proceed? [y/n] " yn
-    case $yn in
-        [Yy]*) 
-            mkclean
-            mktemplate
-            break;;
-        [Nn]*) 
-            exit;;
-        *) 
-            echo "That makes no sense"
-            exit;;
-    esac
-}
-
 function mktemplate(){
-    echo "Creating template"
+    echo "This will wipe out any previously created template."
+
+    get_response
+    mkclean
 
     virt-install --accelerate --hvm --name $TMPL_NAME \
     --connect qemu:///system --ram=$TMPL_MEM --disk path=$TMPL_LV \
@@ -41,8 +28,30 @@ function mktemplate(){
 
 }
 
-function mknode(){
-    echo "booberry"
+function get_response(){
+    read -p "Should I proceed? [y/n] " yn
+    case $yn in
+        [Yy]*) 
+            return;;
+        [Nn]*) 
+            exit;;
+        *) 
+            echo "That makes no sense"
+            exit;;
+    esac
+}
+
+function mknodes(){
+    echo "This will destroy any currently existing nodes"
+    get_response
+    for i in $(seq 3) 
+      do
+	if [ -e $VG_PATH/node$i ]
+	  then
+           lvremove -f $VG_PATH/node$i
+        fi
+        lvcreate --snapshot --size 1G --name node$i $VG_PATH/tmpl_lv
+      done
 }
 
 function mkclean(){
@@ -58,18 +67,15 @@ if [ -z "$@" ]; then
 fi
 
 # parse args
-while getopts ":tn:c" arg; do
+while getopts ":tnc" arg; do
   case $arg in
     t)
-      echo "Create new template" >&2
-      get_template_response
+      mktemplate
       ;;
     n)
-      echo "Create new node" >&2
-      mknode
+      mknodes
       ;;
     c)
-      echo "Cleaning up" >&2
       mkclean
       ;;
     \?)
