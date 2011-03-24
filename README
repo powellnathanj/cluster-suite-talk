@@ -1,1 +1,33 @@
-This is the repository for my RH Cluster Suite talk that I am planning to give in April 2011.
+This is the repository for my RH Cluster Suite talk that I am planning to give
+in April 2011.
+
+If you wish to use this yourself, you will have to read the code.  It's not
+complicated at all though, so you should be fine.
+
+There are 2 files to be concerned with, and an iso (not provided).
+
+On a machine with the appropriate virtualization extensions on the processor,
+install Centos5.5 (Or any GNU/Linux flavor capable of running KVM).  After the
+installation, if you did not select the virtualization pacjage set, then you
+will want to install kvm.  Next install apache (you will need this for the
+kickstart tomfoolery.  Alternatively, any of the other kickstart methods will
+work, but my example here uses http).
+
+The script also makes use of LVM, and it's snap shot capabilites to speed up
+the creation of Virtual Machines.
+
+If this is a fresh install, first check out the codez
+
+  git clone git://github.com/slaney/cluster-suite-talk.git
+
+Then cd into the cluster-suite-talk directory.  Now move the tmpl_ks.cgf
+(kickstart file) to a web accessible directory.
+
+Now, create the template
+
+  make-cluster -t
+
+Then create the nodes
+
+  make-cluster -n
+
