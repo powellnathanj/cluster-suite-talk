@@ -55,6 +55,10 @@ function mktemplate(){
     echo "This will wipe out any previously created template."
 
     get_response
+    for i in $(seq 3)
+      do
+        destroy_vm node$i
+    done
     
     destroy_vm $TMPL_NAME
 
