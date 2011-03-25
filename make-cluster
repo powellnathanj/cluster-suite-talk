@@ -1,7 +1,7 @@
 #!/bin/bash
 # Script for quickly setting up nodes for cluster suite testing
-VG_PATH=/dev/VolGroup00
 VG_NAME=VolGroup00
+VG_PATH=/dev/$VG_NAME
 TMPL_NAME=tmpl_cent5-64-0
 TMPL_LV_NAME=tmpl_lv
 TMPL_LV=/dev/mapper/$VG_NAME-$TMPL_LV_NAME
