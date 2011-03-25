@@ -8,12 +8,12 @@ There are 2 files to be concerned with, and an iso (not provided).
 
 On a machine with the appropriate virtualization extensions on the processor,
 install Centos5.5 (Or any GNU/Linux flavor capable of running KVM).  After the
-installation, if you did not select the virtualization pacjage set, then you
+installation, if you did not select the virtualization package set, then you
 will want to install kvm.  Next install apache (you will need this for the
 kickstart tomfoolery.  Alternatively, any of the other kickstart methods will
 work, but my example here uses http).
 
-The script also makes use of LVM, and it's snap shot capabilites to speed up
+The script also makes use of LVM, and it's snapshot capabilites to speed up
 the creation of Virtual Machines.
 
 If this is a fresh install, first check out the codez
