@@ -110,17 +110,23 @@ function fix_node(){
   # know that will be the name
   mount /dev/vg0/lv0 $MNT_POINT
 
-  # DEBUG, remove.
-  echo "weeeeeeeeeeeeeeeeeeeeeee"
-  ls -l $MNT_POINT
-  # do magic...
-
+  correct_files
 
   # Undo mess so that the next node can be fixed.
   umount $MNT_POINT
   vgchange -an
   kpartx -d $VG_PATH/$NODE_TO_FIX
   rmdir /mnt/$NODE_TO_FIX
+
+  virsh define /root/cluster_suite/aux_files/$NODE_TO_FIX-libvirt.xml
+  virsh start $NODE_TO_FIX
+}
+
+function correct_files(){
+  # Massage files
+  echo "Correcting files."
+  cp /root/cluster_suite/aux_files/$NODE_TO_FIX-ifcfg-eth0 $MNT_POINT/etc/sysconfig/network-scripts/ifcfg-eth0
+  sed -i "s/tmpl/$NODE_TO_FIX/" $MNT_POINT/etc/sysconfig/network
 }
 
 # script requires an argument
