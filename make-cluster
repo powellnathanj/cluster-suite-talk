@@ -14,10 +14,12 @@ TMPL_KS_GW=192.168.122.1
 TMPL_KS_CFG=http://192.168.122.1/tmpl_ks.cfg
 
 function usage(){
+    # FIXME
     echo "You fucked up. Start over"
 }
 
 function get_response(){
+    # Helper function to get a yes/no response
     read -p "Should I proceed? [y/n] " yn
     case $yn in
         [Yy]*) 
@@ -31,6 +33,7 @@ function get_response(){
 }
 
 function destroy_vm(){
+  # Get the machine out of libvirts clutches!
   VM_TO_DESTROY=$1
 
   VM_EXISTS=$(virsh list --all | grep $VM_TO_DESTROY | wc -l)
@@ -47,6 +50,8 @@ function destroy_vm(){
 }
 
 function mktemplate(){
+    # Create a template virtual machine that we can then use to 
+    # take snapshots of to create nodes
     echo "This will wipe out any previously created template."
 
     get_response
@@ -68,6 +73,7 @@ function mktemplate(){
 }
 
 function mknodes(){
+    # Create nodes for cluster using lvm snapshots
     echo "This will destroy any currently existing nodes"
     get_response
     for i in $(seq 3)
@@ -87,6 +93,10 @@ function mknodes(){
 }
 
 function fix_node(){
+  # Now that we have a snapshot, let's discover it
+  # as a logical volume and mount it so we can edit
+  # Files on the file system
+
   NODE_TO_FIX=$1
   MNT_POINT=/mnt/$NODE_TO_FIX
 
@@ -96,13 +106,17 @@ function fix_node(){
 
   mkdir $MNT_POINT
 
-  mount /dev/vg0/lv0 /mnt/$NODE_TO_FIX
+  # This could be more dynamic, but I actually do
+  # know that will be the name
+  mount /dev/vg0/lv0 $MNT_POINT
 
-
+  # DEBUG, remove.
   echo "weeeeeeeeeeeeeeeeeeeeeee"
   ls -l $MNT_POINT
-  # magic...
+  # do magic...
 
+
+  # Undo mess so that the next node can be fixed.
   umount $MNT_POINT
   vgchange -an
   kpartx -d $VG_PATH/$NODE_TO_FIX
