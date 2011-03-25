@@ -20,7 +20,7 @@ If this is a fresh install, first check out the codez
 
   git clone git://github.com/slaney/cluster-suite-talk.git
 
-Then cd into the cluster-suite-talk directory.  Now move the tmpl_ks.cgf
+Then cd into the cluster-suite-talk directory.  Now move the tmpl_ks.cfg
 (kickstart file) to a web accessible directory.
 
 Now, create the template
