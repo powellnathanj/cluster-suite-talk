@@ -1,5 +1,5 @@
 <domain type='kvm'>
-  <name>node2</name>
+  <name>NODENAME</name>
   <memory>524288</memory>
   <currentMemory>524288</currentMemory>
   <vcpu>1</vcpu>
@@ -20,7 +20,7 @@
     <emulator>/usr/libexec/qemu-kvm</emulator>
     <disk type='block' device='disk'>
       <driver name='qemu' cache='none'/>
-      <source dev='/dev/VolGroup00/node2'/>
+      <source dev='/dev/VolGroup00/NODENAME'/>
       <target dev='hda' bus='ide'/>
     </disk>
     <interface type='network'>
