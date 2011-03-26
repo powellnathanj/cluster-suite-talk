@@ -14,8 +14,13 @@ TMPL_KS_GW=192.168.122.1
 TMPL_KS_CFG=http://192.168.122.1/tmpl_ks.cfg
 
 function usage(){
-    # FIXME
-    echo "You fucked up. Start over"
+  cat <<EOF
+Usage: make-cluster -[t | n | c | h ]
+  -t : Create a new template
+  -n : Create new nodes
+  -c : Make Clean
+  -h : This help
+EOF
 }
 
 function get_response(){
@@ -135,12 +140,11 @@ function correct_files(){
 
 # script requires an argument
 if [ -z "$@" ]; then
-  echo "Script requires an argument"
-  usage
+  echo "Script requires an argument, use -h for Usage"
 fi
 
 # parse args
-while getopts ":tnc" arg; do
+while getopts ":tnch" arg; do
   case $arg in
     t)
       mktemplate
@@ -150,6 +154,9 @@ while getopts ":tnc" arg; do
       ;;
     c)
       mkclean
+      ;;
+    h)
+      usage
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
