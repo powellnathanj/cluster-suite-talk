@@ -1,5 +1,6 @@
 #!/bin/bash
 # Script for quickly setting up nodes for cluster suite testing
+NUM_NODES=4
 VG_NAME=VolGroup00
 VG_PATH=/dev/$VG_NAME
 TMPL_NAME=tmpl_cent5-64-0
@@ -60,7 +61,7 @@ function mktemplate(){
     echo "This will wipe out any previously created template."
 
     get_response
-    for i in $(seq 3)
+    for i in $(seq $NUM_NODES)
       do
         destroy_vm node$i
     done
@@ -85,7 +86,7 @@ function mknodes(){
     # Create nodes for cluster using lvm snapshots
     echo "This will destroy any currently existing nodes"
     get_response
-    for i in $(seq 3)
+    for i in $(seq $NUM_NODES)
       do
         destroy_vm node$i
 
@@ -96,8 +97,10 @@ function mknodes(){
 
         lvcreate --snapshot --size 1G --name node$i $VG_PATH/$TMPL_LV_NAME
 
-        fix_node node$i
-
+        fix_node node$i $i
+	
+        sed "s/NODENAME/node$i/" < /root/cluster_suite/aux_files/node.xml | virsh define /proc/self/fd/0
+  	virsh start $NODE_TO_FIX
       done
 }
 
@@ -107,6 +110,7 @@ function fix_node(){
   # Files on the file system
 
   NODE_TO_FIX=$1
+  NODE_NUM=$2
   MNT_POINT=/mnt/$NODE_TO_FIX
 
   kpartx -av $VG_PATH/$NODE_TO_FIX
@@ -119,22 +123,20 @@ function fix_node(){
   # know that will be the name
   mount /dev/vg0/lv0 $MNT_POINT
 
-  correct_files
+  correct_files $NODE_NUM
 
   # Undo mess so that the next node can be fixed.
   umount $MNT_POINT
   vgchange -an
   kpartx -d $VG_PATH/$NODE_TO_FIX
   rmdir /mnt/$NODE_TO_FIX
-
-  virsh define /root/cluster_suite/aux_files/$NODE_TO_FIX-libvirt.xml
-  virsh start $NODE_TO_FIX
 }
 
 function correct_files(){
   # Massage files
+  NODE_NUM=$1
   echo "Correcting files."
-  cp /root/cluster_suite/aux_files/$NODE_TO_FIX-ifcfg-eth0 $MNT_POINT/etc/sysconfig/network-scripts/ifcfg-eth0
+  sed "s/NODE/$NODE_NUM/" /root/cluster_suite/aux_files/node-ifcfg-eth0 > $MNT_POINT/etc/sysconfig/network-scripts/ifcfg-eth0
   sed -i "s/tmpl/$NODE_TO_FIX/" $MNT_POINT/etc/sysconfig/network
 }
 
