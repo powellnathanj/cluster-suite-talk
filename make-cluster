@@ -16,10 +16,9 @@ TMPL_KS_CFG=http://192.168.122.1/tmpl_ks.cfg
 
 function usage(){
   cat <<EOF
-Usage: make-cluster -[t | n | c | h ]
+Usage: make-cluster -[ t | n | h ]
   -t : Create a new template
   -n : Create new nodes
-  -c : Make Clean
   -h : This help
 EOF
 }
@@ -138,6 +137,12 @@ function correct_files(){
   echo "Correcting files."
   sed "s/NODE/$NODE_NUM/" /root/cluster_suite/aux_files/node-ifcfg-eth0 > $MNT_POINT/etc/sysconfig/network-scripts/ifcfg-eth0
   sed -i "s/tmpl/$NODE_TO_FIX/" $MNT_POINT/etc/sysconfig/network
+  mkdir $MNT_POINT/root/.ssh/
+  chmod 600 $MNT_POINT/root/.ssh/
+  cp /root/.ssh/id_rsa.pub $MNT_POINT/root/.ssh/authorized_keys
+  rm /root/.ssh/known_hosts
+  cp /root/cluster_suite/aux_files/iscsi $MNT_POINT/root/iscsi
+  cp /root/cluster_suite/aux_files/yum-install $MNT_POINT/root/yum-install
 }
 
 # script requires an argument
@@ -146,16 +151,13 @@ if [ -z "$@" ]; then
 fi
 
 # parse args
-while getopts ":tnch" arg; do
+while getopts ":tnh" arg; do
   case $arg in
     t)
       mktemplate
       ;;
     n)
       mknodes
-      ;;
-    c)
-      mkclean
       ;;
     h)
       usage

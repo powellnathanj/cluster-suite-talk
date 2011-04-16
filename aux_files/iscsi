@@ -1,0 +1,4 @@
+# discover target
+iscsiadm -m discovery node -t sendtargets -p 192.168.122.1
+# login
+iscsiadm -m node -T iqn.2011-03.org.nathanpowell:server.lun0 -p 192.168.122.1 -l
