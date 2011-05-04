@@ -1,6 +1,6 @@
 #!/bin/bash
 # Script for quickly setting up nodes for cluster suite testing
-NUM_NODES=4
+NUM_NODES=3
 VG_NAME=VolGroup00
 VG_PATH=/dev/$VG_NAME
 TMPL_NAME=tmpl_cent5-64-0
@@ -88,7 +88,7 @@ function mknodes(){
     for i in $(seq $NUM_NODES)
       do
         destroy_vm node$i
-
+	sleep 2
 	if [ -e $VG_PATH/node$i ]
 	  then
            lvremove -f $VG_PATH/node$i
@@ -143,6 +143,7 @@ function correct_files(){
   rm /root/.ssh/known_hosts
   cp /root/cluster_suite/aux_files/iscsi $MNT_POINT/root/iscsi
   cp /root/cluster_suite/aux_files/yum-install $MNT_POINT/root/yum-install
+  cp /root/cluster_suite/aux_files/hosts $MNT_POINT/etc/hosts
 }
 
 # script requires an argument

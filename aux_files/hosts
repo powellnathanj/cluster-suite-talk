@@ -1,0 +1,8 @@
+127.0.0.1       localhost.localdomain localhost
+192.168.122.1   lab.nathanpowell.org lab
+
+192.168.122.61  node1.nathanpowell.org node1
+192.168.122.62  node2.nathanpowell.org node2
+192.168.122.63  node3.nathanpowell.org node3
+192.168.122.64  node4.nathanpowell.org node4
+::1             localhost6.localdomain6 localhost6
